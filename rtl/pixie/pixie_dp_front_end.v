@@ -15,7 +15,7 @@ module pixie_dp_front_end (
 
     output wire [9:0] mem_addr,
     output wire [7:0] mem_data,
-    output wire mem_wr_en
+    output wire mem_wr_en   
 );
 
     parameter bytes_per_line = 14;
@@ -52,10 +52,14 @@ module pixie_dp_front_end (
 
     always @(posedge clk) begin
         if (clk_enable) begin
-            if (horizontal_end)
+            if (horizontal_end) begin
                 horizontal_counter <= 4'b0;
-            else
+                //HBlank <= 1'b1;
+            end
+            else begin
                 horizontal_counter <= horizontal_counter + 1;
+                //HBlank <= 1'b0;
+            end
         end
     end
 
@@ -80,10 +84,14 @@ module pixie_dp_front_end (
             else
                 int_pixie <= 1'b0;
 
-            if (enabled && vertical_counter >= 80 && vertical_counter < 208)
+            if (enabled && vertical_counter >= 80 && vertical_counter < 208) begin
                 v_active <= 1'b1;
-            else
+                //VBlank <= 1'b0;
+            end
+            else begin
                 v_active <= 1'b0;
+                //VBlank <= 1'b1;
+            end
         end
     end
 

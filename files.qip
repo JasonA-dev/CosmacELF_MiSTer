@@ -5,5 +5,7 @@ set_global_assignment -name VERILOG_FILE rtl/pixie/pixie_dp.v
 set_global_assignment -name VERILOG_FILE rtl/pixie/pixie_dp_back_end.v
 set_global_assignment -name VERILOG_FILE rtl/pixie/pixie_dp_frame_buffer.v
 set_global_assignment -name VERILOG_FILE rtl/pixie/pixie_dp_front_end.v
+set_global_assignment -name VERILOG_FILE rtl/pixie/pixie_video.v
+set_global_assignment -name VERILOG_FILE rtl/pixie/pixie_video_studioii.v
 set_global_assignment -name SDC_FILE CosmacELF.sdc
 set_global_assignment -name SYSTEMVERILOG_FILE CosmacELF.sv

@@ -60,7 +60,10 @@ V_SRC = \
 	$(RTL)/pixie/pixie_dp.v \
 	$(RTL)/pixie/pixie_dp_back_end.v \
 	$(RTL)/pixie/pixie_dp_frame_buffer.v \
-	$(RTL)/pixie/pixie_dp_front_end.v
+	$(RTL)/pixie/pixie_dp_front_end.v \
+	$(RTL)/pixie/pixie_dp.v \
+	$(RTL)/pixie/pixie_dp.v
+
 
 C_SRC = \
 	sim_main.cpp  \

@@ -3,7 +3,9 @@ module cosmacelf
 (
 	input         clk,
 	input         reset,
-	
+	input         clk_1m76,
+	input         clk_vid,
+
 	input wire         ioctl_download,
 	input wire   [7:0] ioctl_index,
 	input wire         ioctl_wr,
@@ -17,7 +19,7 @@ module cosmacelf
 	output reg    VBlank,
 	output reg    VSync,
 
-	output  [7:0] video
+	output reg    video
 );
 
 reg int_req     = 1'b0;
@@ -29,6 +31,7 @@ reg  [1:0] sc = 2'b00;
 reg  [3:0] ef = 4'b1111;
 wire       q_out;
 
+reg  [3:0] EF = 4'b0010;
 //assign EF = {0, 0, 1'b1, efx}; disable player controls for now
 assign EF = 4'b0010 | efx;
 
@@ -69,6 +72,7 @@ assign cpu_wr = (ram_a[11:0] >= 12'h800 && ram_a[11:0] < 12'hA00) ? ram_wr : 1'b
 
 reg  [7:0]  video_din;
 
+reg  [15:0] vram_addr;
 dpram #(8, 12) dpram
 (
 	.clock(clk),
@@ -80,14 +84,27 @@ dpram #(8, 12) dpram
 
 	.ram_cs_b(),
 	.wren_b(1'b0),
-	.address_b(ram_d),
+	.address_b(vram_addr[11:0]),
 	.data_b(),
-	.q_b()
+	.q_b(video_din)
 );
 
 reg efx;
 reg csync;
 
+/*
+always @* begin
+	if (ram_a >= 12'h0900 && ram_a < 12'h0a00) begin
+			video_din <= ram_d;
+			//$display("video_din = %h, ram_a = %h", video_din, ram_a);
+		end
+		else begin
+			video_din <= 8'h00;
+		end
+end
+*/
+
+/*
 pixie_dp pixie_dp 
 (
 	// Inputs
@@ -97,15 +114,55 @@ pixie_dp pixie_dp
 	.sc(sc), // [1:0]
 	.disp_on(1'b1),
 	.disp_off(1'b0),
-    .data(ram_a[11:0] >= 12'h900 && ram_a[11:0] < 12'ha00 ? ram_d : 8'h00), // [7:0]
+    .data(video_din), // [7:0]
     .video_clk(clk),
 
 	// Outputs
     .dmao(dma_out_req),
     .int_pixie(int_req),
     .efx(efx),
+
     .csync(csync),
-    .video()
+	.hsync(HSync),
+	.vsync(VSync),
+	.VBlank(VBlank),
+	.HBlank(HBlank),
+
+    .video(video)
 );
+*/
+
+pixie_video pixie_video (
+    // front end, CDP1802 bus clock domain
+    .clk        (clk),    // I
+    .reset      (reset),      // I
+    .clk_enable (ce_pix),     // I      
+
+    .SC         (SC),         // I [1:0]
+    //Temp hard coded display always on.
+//    .disp_on    (io_n[0]),    // I
+//    .disp_off   (~io_n[0]),   // I 
+    .disp_on    (1'b1),    // I
+    .disp_off   (1'b0),   // I 
+
+    .data_addr  (vram_addr),  // O [15:0]
+    .data_in    (video_din),  // I [7:0]    
+
+    .DMAO       (dma_out_req),       // O
+    .INT        (int_req),        // O
+    .EFx        (efx),        // O
+
+    // back end, video clock domain
+    .video_clk  (clk),    // I
+    .csync      (csync),           // O
+    .video      (video),      // O
+
+    .VSync      (VSync),      // O
+    .HSync      (HSync),      // O
+    .VBlank     (VBlank),     // O
+    .HBlank     (HBlank),     // O
+    .video_de   (video_de)    // O    
+);
+
 
 endmodule

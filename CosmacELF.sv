@@ -197,40 +197,25 @@ assign BUTTONS = 0;
 
 //////////////////////////////////////////////////////////////////
 
-wire [1:0] ar = status[122:121];
+//wire [1:0] ar = status[122:121];
 
-assign VIDEO_ARX = (!ar) ? 12'd4 : (ar - 1'd1);
-assign VIDEO_ARY = (!ar) ? 12'd3 : 12'd0;
+//assign VIDEO_ARX = (!ar) ? 12'd4 : (ar - 1'd1);
+//assign VIDEO_ARY = (!ar) ? 12'd3 : 12'd0;
+assign VIDEO_ARX = 12'd0;
+assign VIDEO_ARY = 12'd0;
 
 `include "build_id.v" 
 localparam CONF_STR = {
 	"CosmacELF;;",
+	"-;",	
+	"F0,rom,Load Bios;",
+	"F1,bin,Load Cartridge;",
 	"-;",
-	"O[122:121],Aspect ratio,Original,Full Screen,[ARC1],[ARC2];",
-	"O[2],TV Mode,NTSC,PAL;",
-	"O[4:3],Noise,White,Red,Green,Blue;",
+//	"O[122:121],Aspect ratio,Original,Full Screen,[ARC1],[ARC2];",
+//	"O[2],TV Mode,NTSC,PAL;",
 	"-;",
-	"P1,Test Page 1;",
-	"P1-;",
-	"P1-, -= Options in page 1 =-;",
-	"P1-;",
-	"P1O[5],Option 1-1,Off,On;",
-	"d0P1F1,BIN;",
-	"H0P1O[10],Option 1-2,Off,On;",
-	"-;",
-	"P2,Test Page 2;",
-	"P2-;",
-	"P2-, -= Options in page 2 =-;",
-	"P2-;",
-	"P2S0,DSK;",
-	"P2O[7:6],Option 2,1,2,3,4;",
-	"-;",
-	"-;",
-	"T[0],Reset;",
+//	"T[0],Reset;",
 	"R[0],Reset and close OSD;",
-	"v,0;", // [optional] config version 0-99. 
-	        // If CONF_STR options are changed in incompatible way, then change version number too,
-			  // so all options will get default values on first start.
 	"V,v",`BUILD_DATE 
 };
 
@@ -271,14 +256,45 @@ hps_io #(.CONF_STR(CONF_STR)) hps_io
 ///////////////////////   CLOCKS   ///////////////////////////////
 
 wire clk_sys;
+wire clk_1m76;
+wire clk_vid;
 pll pll
 (
 	.refclk(CLK_50M),
 	.rst(0),
-	.outclk_0(clk_sys)
+	.outclk_0(clk_sys),
+	.outclk_1(clk_vid)
 );
 
-wire reset = RESET | status[0] | buttons[1];
+reg [1:0] div;
+always @(posedge clk_sys) begin
+	if(reset) begin
+		div <= 2'b0;
+		clk_1m76 <= 1'b0;
+	end
+	else begin
+		if(div == 2'd1) begin
+			clk_1m76 <= ~clk_1m76;
+			div <= 2'd0;
+		end
+		else div <= div + 1'b1;
+	end
+end
+
+//wire reset = ioctl_download;
+wire reset = RESET | status[0] | buttons[1] | ioctl_download | download_reset | ~rom_loaded; 
+
+// reset after download
+reg [7:0] download_reset_cnt;
+wire download_reset = download_reset_cnt != 0;
+
+always @(posedge CLK_50M) begin
+	if(ioctl_download || status[0] || buttons[1] || RESET ) download_reset_cnt <= 8'd255;
+	else if(download_reset_cnt != 0) download_reset_cnt <= download_reset_cnt - 8'd1;
+	if(ioctl_download && ioctl_index == 0 && ioctl_addr == 24'd100) rom_loaded <= 1'b1;
+end
+
+reg rom_loaded = 0;
 
 wire [1:0] col = status[4:3];
 
@@ -287,13 +303,15 @@ wire HSync;
 wire VBlank;
 wire VSync;
 wire ce_pix;
-wire [7:0] video;
+wire video;
 
 cosmacelf CosmacELF
 (
 	.clk(clk_sys),
 	.reset(reset),
-
+	.clk_1m76(clk_1m76),
+	.clk_vid(clk_vid),
+	
 	//ioctl
 	.ioctl_download(ioctl_download),
 	.ioctl_index(ioctl_index),
@@ -317,9 +335,9 @@ assign CE_PIXEL = ce_pix;
 assign VGA_DE = ~(HBlank | VBlank);
 assign VGA_HS = HSync;
 assign VGA_VS = VSync;
-assign VGA_G  = (!col || col == 2) ? video : 8'd0;
-assign VGA_R  = (!col || col == 1) ? video : 8'd0;
-assign VGA_B  = (!col || col == 3) ? video : 8'd0;
+assign VGA_R = video ? 8'hFF : 8'h00;
+assign VGA_G = video ? 8'hFF : 8'h00;
+assign VGA_B = video ? 8'hFF : 8'h00;
 
 reg  [26:0] act_cnt;
 always @(posedge clk_sys) act_cnt <= act_cnt + 1'd1; 

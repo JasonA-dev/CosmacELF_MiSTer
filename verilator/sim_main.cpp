@@ -319,9 +319,9 @@ int main(int argc, char** argv, char** env) {
 		ImGui::Begin("DPRAM");
 		mem_edit.DrawContents(&top->top__DOT__CosmacELF__DOT__dpram__DOT__mem, 4096, 0);
 		ImGui::End();
-		ImGui::Begin("Pixie Frame Buffer");
-		mem_edit.DrawContents(&top->top__DOT__CosmacELF__DOT__pixie_dp__DOT__fb__DOT__ram, 1024, 0);
-		ImGui::End();
+		//ImGui::Begin("Pixie Frame Buffer");
+		//mem_edit.DrawContents(&top->top__DOT__CosmacELF__DOT__pixie_dp__DOT__fb__DOT__ram, 1024, 0);
+		//ImGui::End();
 
 		// Debug CDP1802
 		ImGui::Begin("CDP1802");
@@ -351,6 +351,7 @@ int main(int argc, char** argv, char** env) {
 		ImGui::Text("next_state:  0x%04X", top->top__DOT__CosmacELF__DOT__cdp1802__DOT__next_state);					
 		ImGui::End();
 
+/*
 		// Debug Pixie DP
 		ImGui::Begin("Pixie DP");
 		ImGui::Text("clk_enable:  0x%04X", top->top__DOT__CosmacELF__DOT__pixie_dp__DOT__clk_enable);		
@@ -367,7 +368,13 @@ int main(int argc, char** argv, char** env) {
 		ImGui::Text("csync:       0x%04X", top->top__DOT__CosmacELF__DOT__pixie_dp__DOT__csync);	
 		ImGui::Text("video:       0x%04X", top->top__DOT__CosmacELF__DOT__pixie_dp__DOT__video);	
 		ImGui::Text("sc:          0x%04X", top->top__DOT__CosmacELF__DOT__pixie_dp__DOT__sc);	
+		ImGui::Spacing();		
+		ImGui::Text("hsync:       0x%04X", top->top__DOT__CosmacELF__DOT__pixie_dp__DOT__hsync);
+		ImGui::Text("vsync:       0x%04X", top->top__DOT__CosmacELF__DOT__pixie_dp__DOT__vsync);	
+		ImGui::Text("VBlank:      0x%04X", top->top__DOT__CosmacELF__DOT__pixie_dp__DOT__VBlank);	
+		ImGui::Text("HBlank:      0x%04X", top->top__DOT__CosmacELF__DOT__pixie_dp__DOT__HBlank);			
 		ImGui::End();
+*/
 
 		// Trace/VCD window
 		ImGui::Begin(windowTitle_Trace);

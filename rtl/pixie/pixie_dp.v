@@ -16,6 +16,11 @@ module pixie_dp (
     input wire video_clk,
 
     output wire csync,
+    output wire hsync,
+    output wire vsync,
+    output wire VBlank,
+    output wire HBlank,
+
     output wire video
 );
 
@@ -68,6 +73,11 @@ module pixie_dp (
         .fb_data(fb_b_data),
 
         .csync(csync),
+        .hsync(hsync),
+        .vsync(vsync),
+        .VBlank(VBlank),
+        .HBlank(HBlank),
+
         .video(video)
     );
 

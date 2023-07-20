@@ -9,6 +9,10 @@ module pixie_dp_back_end
   output wire [9:0] fb_addr,
   input  wire [7:0] fb_data,
   output wire csync,
+  output wire hsync,
+  output reg vsync,
+  output wire VBlank,
+  output wire HBlank,
   output reg video
 );
 
@@ -25,14 +29,14 @@ module pixie_dp_back_end
   reg [7:0] pixel_shift_reg;
 
   reg [7:0] horizontal_counter;
-  wire hsync;
+  //wire hsync;
   reg active_h_adv2;
   reg active_h_adv1;
   wire active_h;
   wire advance_v;
 
   reg [8:0] vertical_counter;
-  reg vsync;
+  //reg vsync;
   wire active_v;
 
   wire active_video;
@@ -44,6 +48,9 @@ module pixie_dp_back_end
   assign active_v = vertical_counter < active_v_lines;
   assign csync = hsync ^ vsync;
   assign active_video = active_h && active_v;
+
+  assign VBlank = ~active_v;
+  assign HBlank = ~active_h;
 
   always @(posedge clk) begin
     if (horizontal_counter == (pixels_per_line - 1))
