@@ -63,7 +63,7 @@ wire key_strobe = old_keystb ^ ps2_key[10];
 reg old_keystb = 0;
 always @(posedge clk_48) old_keystb <= ps2_key[10];
 
-CosmacELF CosmacELF
+cosmacelf CosmacELF
 (
 	.clk(clk_48),
 	.reset(reset),

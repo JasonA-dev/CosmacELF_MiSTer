@@ -9,7 +9,7 @@ module pixie_dp_back_end
   output wire [9:0] fb_addr,
   input  wire [7:0] fb_data,
   output wire csync,
-  output wire video
+  output reg video
 );
 
   parameter pixels_per_line = 112;
@@ -64,9 +64,7 @@ module pixie_dp_back_end
     end
 
     vsync <= vertical_counter >= vsync_start_line && vertical_counter < vsync_start_line + vsync_height_lines;
-  end
 
-  always @(posedge clk) begin
     if (pixel_shift_reg[7])
       pixel_shift_reg <= {fb_data, 1'b0};
     else

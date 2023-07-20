@@ -17,8 +17,8 @@ module cdp1802(
     output wire [1:0] sc
 );
 
-    typedef reg [3:0] nibble_t;
-    typedef reg [15:0] word_t;
+    //typedef reg [3:0] nibble_t;
+    //typedef reg [15:0] word_t;
 
     // Instructions
     localparam reg [7:0] inst_idl = 8'h00;

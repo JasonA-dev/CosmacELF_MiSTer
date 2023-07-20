@@ -1,5 +1,5 @@
 
-module CosmacELF
+module cosmacelf
 (
 	input         clk,
 	input         reset,
@@ -29,7 +29,8 @@ reg  [1:0] sc = 2'b00;
 reg  [3:0] ef = 4'b1111;
 wire       q_out;
 
-assign EF = {0, 0,1'b1,efx};
+//assign EF = {0, 0, 1'b1, efx}; disable player controls for now
+assign EF = 4'b0010 | efx;
 
 reg [2:0] io_port;
 

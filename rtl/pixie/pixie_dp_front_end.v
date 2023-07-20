@@ -11,7 +11,7 @@ module pixie_dp_front_end (
 
     output wire dmao,
     output reg int_pixie,
-    output wire efx,
+    output reg efx,
 
     output wire [9:0] mem_addr,
     output wire [7:0] mem_data,

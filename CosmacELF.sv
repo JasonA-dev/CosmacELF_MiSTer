@@ -289,13 +289,10 @@ wire VSync;
 wire ce_pix;
 wire [7:0] video;
 
-CosmacELF CosmacELF
+cosmacelf CosmacELF
 (
 	.clk(clk_sys),
 	.reset(reset),
-	
-	.pal(status[2]),
-	.scandouble(forced_scandoubler),
 
 	//ioctl
 	.ioctl_download(ioctl_download),

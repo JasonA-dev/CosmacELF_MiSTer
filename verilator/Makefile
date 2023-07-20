@@ -54,8 +54,8 @@ CC_OPT = -O
 
 V_SRC = \
 	sim.v \
-	$(RTL)/CosmacELF.v \
-	$(RTL)/cdp1802.v \
+	$(RTL)/cosmacelf.sv \
+	$(RTL)/cdp1802.sv \
 	$(RTL)/dpram.sv \
 	$(RTL)/pixie/pixie_dp.v \
 	$(RTL)/pixie/pixie_dp_back_end.v \
